@@ -510,7 +510,6 @@ INSERT INTO `displayobj` (`id`, `URL`, `obj_type`, `content`, `htmllist_id`, `co
 (100200404, '', 'include', 'controllers/index_controller.php', '100200404', 'Diagnosis'),
 (100200504, '', 'include', 'controllers/index_controller.php', '100200504', 'Treatment'),
 (100200604, '', 'section', '', '100200604', 'PDQ'),
-(100299400, 'inc/portal_graph_page_top.php', 'include', '', '', 'graph page top'),
 (100300100, '', 'include', 'controllers/symptom/index_controller.php', '', 'symptom management'),
 (100300106, 'inc/portal_symptom_topics.php', 'include', 'controllers/index_controller.php', '', 'Symptom Mgmt Topics'),
 (100300200, '', 'include', 'controllers/symptom/report/index_controller.php', '', 'symptom report'),
