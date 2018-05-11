@@ -1,5 +1,4 @@
 <?php
-
 //graph_model
 //gets data to display graph screens
 /*	global $seq;
@@ -32,7 +31,9 @@
 	$date_result = 	mysqli_query($link, $d_query);
 	$d_row = mysqli_fetch_array($date_result, MYSQLI_BOTH);
 	//start the first day of the first data month
-	$date1_array = explode(' ', $d_row["min_time"]);
+	$min_time = "0000-00-00 00:00:00";
+	if($d_row["min_time"] > $min_time){$min_time = $d_row["min_time"]; }
+	$date1_array = explode(' ', $min_time);
 	$start_data_date = $date1_array[0];
 	$date1Y_M_D = explode('-',$date1_array[0]);
 	$start_year = $date1Y_M_D[0];
@@ -40,7 +41,10 @@
 	$start_offset_days = $date1Y_M_D[2]-1;
 	$start_time = $start_year.'-'.$start_month.'-01';
 	
-	$date2_array = explode(' ', $d_row["max_time"]);
+	//max_time
+	$max_time = "0000-00-00 00:00:00";
+	if($d_row["max_time"] > $max_time){$max_time = $d_row["max_time"]; }
+	$date2_array = explode(' ', $max_time);
 	//calculate the start of the next day
 	$date2Y_M_D = explode('-',$date2_array[0]);
 	$end_year = $date2Y_M_D[0];
@@ -76,7 +80,6 @@
 	$ts1 = strtotime($start_time);
 	$ts2 = strtotime($end_time);
 	$seconds_diff = $ts2 - $ts1;
-
 	$interval =  floor($seconds_diff/3600/24);
 	if($interval < $start_offset_days){
 		$interval = $start_offset_days+1;
