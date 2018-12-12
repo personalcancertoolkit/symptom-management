@@ -33,8 +33,14 @@ if(isset($_SESSION["user_id"])){
 }
 
 //get the cancer type for filtering symptoms
-$cancer_type = "colorectal";
-	if(isset($_REQUEST["cancer_type"])){ $cancer_type = sanitize($_REQUEST['cancer_type']); 
+$cancer_type = "all";
+if(!isset($_SESSION["cancer_type"])){
+	$cancer_type = $_SESSION["cancer_type"];
+}else{
+	if(isset($_REQUEST["cancer_type"])){ 
+		$cancer_type = sanitize($_REQUEST['cancer_type']);
+		$_SESSION["cancer_type"] = $cancer_type;
+	}
 }
 
 $start_page = '_003';
