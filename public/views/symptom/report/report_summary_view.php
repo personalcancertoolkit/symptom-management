@@ -179,7 +179,7 @@
                 </table>
                 <br/>
         		<div id="custom_guide_link" >
-					<input class="btn btn-primary center-block" id="report_button" type="button" value="This looks good... Continue" onclick="javascript:get_page('_003_003');" /><br/>
+					<input class="btn btn-primary center-block" id="report_button" type="button" value="Done" onclick="javascript:get_page('_003_003');" /><br/>
 				</div>
             	<div id="print_btn">
                 	<input type="button" value="Print This Page" onclick="window.print()" />
