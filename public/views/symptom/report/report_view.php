@@ -100,13 +100,28 @@
 		<div class = "row">
 			<nav class = "col-xs-12">
   				<ul class="pager"><?php 
-	if ($seq > "_003_002_006"){
+				
+	//get the first symptom
+		$sql = "SELECT symptom_id from cancer_symptoms
+				WHERE cancer_type = '".$cancer_type."'
+				ORDER BY CAST(symptom_id AS SIGNED) ASC LIMIT 1";
+		$result = mysqli_query($link, $sql);
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		$symptom_id = $row["symptom_id"];
+		switch (strlen($symptom_id)){
+			case 0; $first_seq = '_003_002_006'; break;
+			case 1: $first_seq = '_003_002_00'.$symptom_id; break;
+			case 2: $first_seq = '_003_002_0'.$symptom_id; break;
+			case 3: $first_seq = '_003_002_'.$symptom_id; break;
+		}//switch
+					
+	if ($seq > $first_seq){
   		echo'
-    				<li class="previous"><a href="index.php?nav=prev&seq='.$seq.'"><span aria-hidden="true">&larr;</span> Previous Symptom</a></li>';
+    				<li class="previous"><a href="index.php?nav=prevsymptom&seq='.$seq.'"><span aria-hidden="true">&larr;</span> Previous Symptom</a></li>';
 	}
 ?>
 	
-    				<li class="next"><a href="index.php?nav=next&seq=<?php echo $seq; ?>">Next Symptom <span aria-hidden="true">&rarr;</span></a></li>
+    				<li class="next"><a href="index.php?nav=nextsymptom&seq=<?php echo $seq; ?>">Next Symptom <span aria-hidden="true">&rarr;</span></a></li>
   				</ul>
 			</nav>
 		</div>  <!-- /.row  -->

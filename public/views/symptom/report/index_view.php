@@ -15,9 +15,23 @@
 				<button style="margin-bottom:1em;cursor:hand;cursor:pointer" onclick="javascript:do_login()">Log In or Create an Account</button><br/>
 			</div>';
 	}else{
+		//get the first symptom
+		$sql = "SELECT symptom_id from cancer_symptoms
+				WHERE cancer_type = '".$cancer_type."'
+				ORDER BY CAST(symptom_id AS SIGNED) ASC LIMIT 1";
+		$result = mysqli_query($link, $sql);
+		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+		$symptom_id = $row["symptom_id"];
+		switch (strlen($symptom_id)){
+			case 0; $first_seq = '_003_002_006'; break;
+			case 1: $first_seq = '_003_002_00'.$symptom_id; break;
+			case 2: $first_seq = '_003_002_0'.$symptom_id; break;
+			case 3: $first_seq = '_003_002_'.$symptom_id; break;
+		}//switch
+				
 		echo '
 			<div id="report_symptoms_link" >
-				<input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\'_003_002_006\');" /><br/>
+				<input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\''.$first_seq.'\');" /><br/>
 			</div>';
 	}
 ?>
@@ -37,7 +51,7 @@
 <?php 
 	if($_SESSION["user_id"] > 0){
 		echo '
-			<div id="report_symptoms_link"><input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\'_003_002_006\');" />
+			<div id="report_symptoms_link"><input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\''.$first_seq.'\');" />
 			</div>';
 	}
 ?>

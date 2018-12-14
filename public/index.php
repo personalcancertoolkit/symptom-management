@@ -262,6 +262,66 @@ if((isset($_REQUEST['username']))&&(isset($_REQUEST['password']))){
 		}	
 	}
 	
+	if($nav_direction == "nextsymptom"){
+		//query for next symptom id
+		$seq_array = explode('_',$seq);
+		$symptom_id = intval($seq_array[3]);
+		
+		$sql = "SELECT symptom_id from cancer_symptoms
+				WHERE cancer_type = '".$cancer_type."'
+				AND CAST(symptom_id AS SIGNED) > '".$symptom_id."'
+				ORDER BY CAST(symptom_id AS SIGNED) LIMIT 1";
+		$result = mysqli_query($link, $sql);
+		if(mysqli_num_rows($result) < 1){ $next_symptom = '900'; }	
+		else{ 
+			$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+			$next_symptom = $row["symptom_id"];
+		}
+		
+		
+		$navquery = "SELECT seq
+					FROM screenlist, cancer_symptoms 
+					WHERE `seq` > '".$seq."' 
+					AND `seq` LIKE '_003_002%".$next_symptom."'
+					AND `s_type` = 'screen' 
+					ORDER BY `seq` ASC LIMIT 1";
+		$navresult = mysqli_query($link, $navquery);
+		$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
+		if($navrow["seq"] != NULL){
+			$seq = 	$navrow["seq"];	
+		}
+	}
+	
+	if($nav_direction == "prevsymptom"){
+		//query for next symptom id
+		$seq_array = explode('_',$seq);
+		$symptom_id = intval($seq_array[3]);
+		
+		$sql = "SELECT symptom_id from cancer_symptoms
+				WHERE cancer_type = '".$cancer_type."'
+				AND CAST(symptom_id AS SIGNED) < '".$symptom_id."'
+				ORDER BY CAST(symptom_id AS SIGNED) DESC LIMIT 1";
+		$result = mysqli_query($link, $sql);
+		if(mysqli_num_rows($result) < 1){ $prev_symptom = ''; }	
+		else{ 
+			$row = mysqli_fetch_array($result, MYSQLI_BOTH);
+			$prev_symptom = $row["symptom_id"];
+		}
+		
+		
+		$navquery = "SELECT seq
+					FROM screenlist, cancer_symptoms 
+					WHERE `seq` < '".$seq."' 
+					AND `seq` LIKE '_003_002%".$prev_symptom."'
+					AND `s_type` = 'screen' 
+					ORDER BY `seq` DESC LIMIT 1";
+		$navresult = mysqli_query($link, $navquery);
+		$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
+		if($navrow["seq"] != NULL){
+			$seq = 	$navrow["seq"];	
+		}
+	}
+	
 	header("Content-Type: text/html");
     header("Cache-Control: no-store");
     header("Pragma: no-cache");
