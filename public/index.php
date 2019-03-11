@@ -29,19 +29,21 @@ include("php/o_portalConnect.php");
 	
 $user_id = 0;
 if(isset($_SESSION["user_id"])){
+	//for production
 	$user_id = $_SESSION["user_id"];
+	
+	//for testing
+	//$user_id = $omrs_id;
+	//	$_SESSION["user_id"] = $omrs_id;
 }
 
 //get the cancer type for filtering symptoms
-$cancer_type = "all";
-if(isset($_SESSION["cancer_type"])){
-	$cancer_type = $_SESSION["cancer_type"];
-}else{
-	if(isset($_REQUEST["cancer_type"])){ 
-		$cancer_type = sanitize($_REQUEST['cancer_type']);
-		$_SESSION["cancer_type"] = $cancer_type;
-	}
+$cancer_type = "colorectal";
+	if(isset($_REQUEST["cancer_type"])){ $cancer_type = sanitize($_REQUEST['cancer_type']); 
 }
+
+	//for testing:::
+	//$cancer_type = "all";
 
 $start_page = '_003';
 	
@@ -214,39 +216,141 @@ if((isset($_REQUEST['username']))&&(isset($_REQUEST['password']))){
 	}
 	
 	$current_seq = sanitize($_REQUEST["seq"]);
-	
+
 	if($current_seq == NULL){
 		$seq = $start_page;
 	}else{
 		$seq = $current_seq;
 	}
-
 	
+	$section = substr($seq,0,8);
+	$symptom = substr($seq,8,12);
+
 	if($nav_direction == "next"){
-		$navquery = "SELECT seq
-					FROM screenlist 
-					WHERE `seq` > '".$seq."' 
+		// is there another sequence # for this section and symptom?
+		$seq_sql = "SELECT seq
+					FROM screenlist
+					WHERE `seq` > '".$seq."'
+					AND `seq` LIKE '".$section.$symptom."%' 
 					AND `s_type` = 'screen' 
 					ORDER BY `seq` ASC LIMIT 1";
-		$navresult = mysqli_query($link, $navquery);
-		$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
-		if($navrow["seq"] != NULL){
-			$seq = 	$navrow["seq"];	
+		$seqresult = mysqli_query($link, $seq_sql);
+		if(mysqli_num_rows($seqresult) > 0){
+			$seqrow = mysqli_fetch_array($seqresult, MYSQLI_BOTH);
+			$seq = $seqrow["seq"];
 		}
-	}
+		else  //  if(mysqli_num_rows($seqresult) > 0)
+		{
+			if($symptom > ''){
+				//look through the symptom sort_names, find the next one and search for a SEQUENCE item that comes next, up to 10 tries
+				$search_next = true;
+				while ($search_next){
+					//get the currrent sort name
+					$sql = "SELECT sort_name from symptoms WHERE symptom_id = '".$symptom."' LIMIT 1";
+					$sortresult = mysqli_query($link, $sql);
+					$sortrow = mysqli_fetch_array($sortresult, MYSQLI_BOTH);
+					$sort_name = $sortrow["sort_name"];
+
+					//get the next symptoms record
+					$sql = "SELECT symptom_id from symptoms 
+							WHERE sort_name > '".$sort_name."' 
+							ORDER BY sort_name ASC LIMIT 1";
+					$sortresult = mysqli_query($link, $sql);
+					if(mysqli_num_rows($sortresult) > 0){
+						$sortrow = mysqli_fetch_array($sortresult, MYSQLI_BOTH);
+						$symptom = $sortrow["symptom_id"];
+						
+						$seq_sql = "SELECT seq
+									FROM screenlist
+									WHERE `seq` LIKE '".$section.$symptom."%' 
+									AND `s_type` = 'screen' 
+									ORDER BY `seq` ASC LIMIT 1";
+						
+						$seqresult = mysqli_query($link, $seq_sql);
+						if(mysqli_num_rows($seqresult) > 0){
+							$seqrow = mysqli_fetch_array($seqresult, MYSQLI_BOTH);
+							$seq = $seqrow["seq"];
+							$search_next = false;
+						} //if(mysqli_num_rows($seqresult) > 0)
+					}  //if(mysqli_num_rows($sortresult) > 0)
+					else  
+					{$search_next = false;}
+				}//while
+			}else{  //if($symptom > '')
+				$navquery = "SELECT seq
+							FROM screenlist 
+							WHERE `seq` > '".$seq."' 
+							AND `s_type` = 'screen' 
+							ORDER BY `seq` ASC LIMIT 1";
+			}  //-- end -- else //if($symptom > '')
+			$navresult = mysqli_query($link, $navquery);
+			$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
+			if($navrow["seq"] != NULL){ $seq = 	$navrow["seq"];	 }
+		}  // -- end  --  else  if(mysqli_num_rows($seqresult) > 0)
+	} //if nav= next
 	
 	if($nav_direction == "prev"){
-		$navquery = "SELECT seq
-					FROM screenlist 
-					WHERE `seq` < '".$seq."' 
+		// is there another sequence # for this section and symptom?
+		$seq_sql = "SELECT seq
+					FROM screenlist
+					WHERE `seq`< '".$seq."'
+					AND `seq` LIKE '".$section.$symptom."%' 
 					AND `s_type` = 'screen' 
 					ORDER BY `seq` DESC LIMIT 1";
-		$navresult = mysqli_query($link, $navquery);
-		$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
-		if($navrow["seq"] != NULL){
-			$seq = 	$navrow["seq"];	
-		}
-	}
+		$seqresult = mysqli_query($link, $seq_sql);
+		if(mysqli_num_rows($seqresult) > 0){
+			$seqrow = mysqli_fetch_array($seqresult, MYSQLI_BOTH);
+			$seq = $seqrow["seq"];
+		}else  //  if(mysqli_num_rows($seqresult) > 0)
+		{
+			if($symptom > ''){
+								//look through the symptom sort_names, find the next one and search for a SEQUENCE item that comes next, up to 10 tries
+				$search_prev = true;
+				while ($search_prev){
+					//get the currrent sort name
+					$sql = "SELECT sort_name from symptoms WHERE symptom_id = '".$symptom."' LIMIT 1";
+					$sortresult = mysqli_query($link, $sql);
+					$sortrow = mysqli_fetch_array($sortresult, MYSQLI_BOTH);
+					$sort_name = $sortrow["sort_name"];
+					
+					//get the prev symptoms record
+					$sql = "SELECT symptom_id from symptoms 
+							WHERE sort_name < '".$sort_name."' 
+							ORDER BY sort_name DESC LIMIT 1";
+					$sortresult = mysqli_query($link, $sql);
+					if(mysqli_num_rows($sortresult) > 0){
+						$sortrow = mysqli_fetch_array($sortresult, MYSQLI_BOTH);
+						$symptom = $sortrow["symptom_id"];
+						
+						$seq_sql = "SELECT seq
+								FROM screenlist
+								WHERE `seq` LIKE '".$section.$symptom."%' 
+								AND `s_type` = 'screen' 
+								ORDER BY `seq` DESC LIMIT 1";
+								
+						$seqresult = mysqli_query($link, $seq_sql);
+						if(mysqli_num_rows($seqresult) > 0){
+							$seqrow = mysqli_fetch_array($seqresult, MYSQLI_BOTH);
+							$seq = $seqrow["seq"];
+							$search_prev = false;
+						} //if(mysqli_num_rows($seqresult) > 0)
+					}  //if(mysqli_num_rows($sortresult) > 0)
+					else  
+					{$search_prev = false;}
+				}//while
+			}else{  //if($symptom > '')
+				$navquery = "SELECT seq
+							FROM screenlist 
+							WHERE `seq` < '".$seq."' 
+							AND `s_type` = 'screen' 
+							ORDER BY `seq` DESC LIMIT 1";
+			}
+			$navresult = mysqli_query($link, $navquery);
+			$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
+			if($navrow["seq"] != NULL){ $seq = 	$navrow["seq"];	}
+		}  // -- end  --  else  if(mysqli_num_rows($seqresult) > 0)
+	} //if nav = PREV
+	
 	
 	if($nav_direction == "back"){
 
@@ -260,66 +364,6 @@ if((isset($_REQUEST['username']))&&(isset($_REQUEST['password']))){
 		if($navrow["seq"] != NULL){
 			$seq = 	$navrow["seq"];		
 		}	
-	}
-	
-	if($nav_direction == "nextsymptom"){
-		//query for next symptom id
-		$seq_array = explode('_',$seq);
-		$symptom_id = intval($seq_array[3]);
-		
-		$sql = "SELECT symptom_id from cancer_symptoms
-				WHERE cancer_type = '".$cancer_type."'
-				AND CAST(symptom_id AS SIGNED) > '".$symptom_id."'
-				ORDER BY CAST(symptom_id AS SIGNED) LIMIT 1";
-		$result = mysqli_query($link, $sql);
-		if(mysqli_num_rows($result) < 1){ $next_symptom = '900'; }	
-		else{ 
-			$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-			$next_symptom = $row["symptom_id"];
-		}
-		
-		
-		$navquery = "SELECT seq
-					FROM screenlist, cancer_symptoms 
-					WHERE `seq` > '".$seq."' 
-					AND `seq` LIKE '_003_002%".$next_symptom."'
-					AND `s_type` = 'screen' 
-					ORDER BY `seq` ASC LIMIT 1";
-		$navresult = mysqli_query($link, $navquery);
-		$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
-		if($navrow["seq"] != NULL){
-			$seq = 	$navrow["seq"];	
-		}
-	}
-	
-	if($nav_direction == "prevsymptom"){
-		//query for next symptom id
-		$seq_array = explode('_',$seq);
-		$symptom_id = intval($seq_array[3]);
-		
-		$sql = "SELECT symptom_id from cancer_symptoms
-				WHERE cancer_type = '".$cancer_type."'
-				AND CAST(symptom_id AS SIGNED) < '".$symptom_id."'
-				ORDER BY CAST(symptom_id AS SIGNED) DESC LIMIT 1";
-		$result = mysqli_query($link, $sql);
-		if(mysqli_num_rows($result) < 1){ $prev_symptom = ''; }	
-		else{ 
-			$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-			$prev_symptom = $row["symptom_id"];
-		}
-		
-		
-		$navquery = "SELECT seq
-					FROM screenlist, cancer_symptoms 
-					WHERE `seq` < '".$seq."' 
-					AND `seq` LIKE '_003_002%".$prev_symptom."'
-					AND `s_type` = 'screen' 
-					ORDER BY `seq` DESC LIMIT 1";
-		$navresult = mysqli_query($link, $navquery);
-		$navrow = mysqli_fetch_array($navresult, MYSQLI_BOTH);
-		if($navrow["seq"] != NULL){
-			$seq = 	$navrow["seq"];	
-		}
 	}
 	
 	header("Content-Type: text/html");

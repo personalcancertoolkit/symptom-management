@@ -20,14 +20,15 @@
 //			AND s_type = 'screen'";
 //	$sc_result = mysqli_query($link, $sc_query);
 
-	$sc_query = "SELECT screenlist.id, seq, s_name, displaylist_id FROM screenlist, cancerlist, cancer_symptoms
+	$sc_query = "SELECT screenlist.id, seq, s_name, displaylist_id FROM screenlist, cancerlist, cancer_symptoms, symptoms
 			WHERE seq LIKE '_003_002____'
 			AND cancerlist.cancer = '".$cancer_type."'
 			AND cancerlist.id = cancer_symptoms.cancer_id
-			AND seq LIKE CONCAT('%', cancer_symptoms.symptom_id)
-			AND s_type = 'screen'";
+			AND symptoms.id = cancer_symptoms.symptom_id
+			AND seq = CONCAT('_003_002', symptoms.symptom_id)
+			AND s_type = 'screen'
+			ORDER BY symptoms.sort_name";
 	$sc_result = mysqli_query($link, $sc_query);
-	
 	
 	$symptom_summary_array = array();
 	

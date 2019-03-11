@@ -15,23 +15,9 @@
 				<button style="margin-bottom:1em;cursor:hand;cursor:pointer" onclick="javascript:do_login()">Log In or Create an Account</button><br/>
 			</div>';
 	}else{
-		//get the first symptom
-		$sql = "SELECT symptom_id from cancer_symptoms
-				WHERE cancer_type = '".$cancer_type."'
-				ORDER BY CAST(symptom_id AS SIGNED) ASC LIMIT 1";
-		$result = mysqli_query($link, $sql);
-		$row = mysqli_fetch_array($result, MYSQLI_BOTH);
-		$symptom_id = $row["symptom_id"];
-		switch (strlen($symptom_id)){
-			case 0; $first_seq = '_003_002_006'; break;
-			case 1: $first_seq = '_003_002_00'.$symptom_id; break;
-			case 2: $first_seq = '_003_002_0'.$symptom_id; break;
-			case 3: $first_seq = '_003_002_'.$symptom_id; break;
-		}//switch
-				
 		echo '
 			<div id="report_symptoms_link" >
-				<input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\''.$first_seq.'\');" /><br/>
+				<input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\'_003_002_006\');" /><br/>
 			</div>';
 	}
 ?>
@@ -40,7 +26,7 @@
 	if($_SESSION["user_id"] < 1){ echo'You will need to log in, so create an account (Click the "Log-in" link).  It\'s free, and you will not be asked to provide any personally identifiable information.  We respect your privacy, and all your information will remain confidential.';} ?></p><br/>
             
 			<h4>Here's how it works:</h4>
-			<p>You will be asked to rate the severity of 13 symptoms that chemotherapy patients often experience.  Rank your symptom severity on a scale of 0 to 10, with 10 being the worst possible symptom severity.  If you are not experiencing the symptom at all, rate it as zero.  Mild symptoms should fall in the 1-3 range, while moderate symptom severity should be ranked between 4 and 6.  Use the descriptive statements to help find your symptom severity.  Once you have worked through the set of symptoms, you will be shown a summary of your current report.  If it looks good, approve it, and you will then see a Custom Symptom Mangagement Guide.  It is recommended that you report your symptoms about once a week.</p><br/>
+			<p>You will be asked to rate the severity of some symptoms that chemotherapy patients often experience.  Rank your symptom severity on a scale of 0 to 10, with 10 being the worst possible symptom severity.  If you are not experiencing the symptom at all, rate it as zero.  Mild symptoms should fall in the 1-3 range, while moderate symptom severity should be ranked between 4 and 6.  Use the descriptive statements to help find your symptom severity.  Once you have worked through the set of symptoms, you will be shown a summary of your current report.  If it looks good, approve it, and you will then see a Custom Symptom Mangagement Guide.  It is recommended that you report your symptoms about once a week.</p><br/>
             
 			<h4>Custom Symptom Management Guide</h4>
 			<p>The Custom Symptom Management Guide is a collection of symptom management information, prioritized for the symptoms you report.  For example, if your biggest problem is fatigue, you will see the Fatigue section first.</p><br/>
@@ -51,7 +37,7 @@
 <?php 
 	if($_SESSION["user_id"] > 0){
 		echo '
-			<div id="report_symptoms_link"><input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\''.$first_seq.'\');" />
+			<div id="report_symptoms_link"><input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\'_003_002_006\');" />
 			</div>';
 	}
 ?>
