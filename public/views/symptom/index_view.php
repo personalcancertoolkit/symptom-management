@@ -38,9 +38,8 @@ if($_SESSION["user_id"] < 1){
         
             <h3>More Information</h3>
             <ul style="padding-left:1em;"> 
-                <li><a href="http://www.chemocare.com/MANAGING/index.asp" onclick="popblank(\'\');" target="blank">Managing Chemotherapy Side Effects</a><br />(Chemocare.com)</li>
-                <li><a href="http://www.cancer.net/patient/Diagnosis+and+Treatment/Treating+Cancer/Managing+Side+Effects" onclick="popblank(\'\');" target="blank">Understanding and Managing Chemotherapy Side Effects</a> (Cancer.Net)</li>
-                <li><a href="http://www.cancercare.org/publications/24-understanding_and_managing_chemotherapy_side_effects" onclick="popblank(\'\');" target="blank">Managing Treatment and Side Effects</a><br />(Cancer Care Online)</li>
+                <li><a href="https://chemocare.com/chemotherapy/side-effects/default.aspx" onclick="popblank(\'\');" target="blank">Managing Chemotherapy Side Effects</a><br />(Chemocare.com)</li>
+                <li><a href="https://www.cancer.net/coping-with-cancer/physical-emotional-and-social-effects-cancer/managing-physical-side-effects" onclick="popblank(\'\');" target="blank">Understanding and Managing Chemotherapy Side Effects</a> (Cancer.Net)</li>
                 <li><a href="https://www.oncolink.org/support/side-effects" onclick="popblank(\'\');" target="blank">Side Effects</a> (OncoLink&#174;)</li>
             </ul>
             </div>  <!-- /#resources /.well well-lg -->
