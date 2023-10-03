@@ -380,8 +380,8 @@ if((isset($_REQUEST['username']))&&(isset($_REQUEST['password']))){
 					'".$user_id."',
 					'".$session_id."',
 					'".$seq."',
-					'".$s_name."',
-					'".$deeplink."',
+					(SELECT s_name FROM screenlist WHERE seq = '".$seq."' LIMIT 1),
+					(SELECT deeplink FROM screenlist WHERE seq = '".$seq."' LIMIT 1),
 					NOW(),
 					NULL,
 					NULL)";
