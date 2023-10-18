@@ -39,6 +39,19 @@
 		echo '
 			<div id="report_symptoms_link"><input class="btn btn-primary center-block" id="report_button" type="button" value="Start Reporting Now" onclick="javascript:get_page(\'_003_002_006\');" />
 			</div>';
+
+		// Create a new session when symptom reporting is about to start
+		$user_id = $_SESSION["user_id"];
+		$query = "INSERT INTO  `sessions` (`session_id` ,`user_id` ,`timestamp`)
+					VALUES (NULL ,  '".$user_id."', NOW( ))";
+		$result = mysqli_query($link, $query);
+		$_SESSION["mysql_sid"] = mysqli_insert_id($link);
+				
+		$query = "INSERT INTO  `nav_tracking` (`id` ,`session_id` ,`user_id` ,`pointer` ,`seq` ,`timestamp`)
+					VALUES (NULL, '".$_SESSION["mysql_sid"]."',  '".$user_id."',  'current',  '".$tracking_seq."', NOW())";
+		$result = mysqli_query($link, $query);
+		
+		$session_id = $_SESSION["mysql_sid"];
 	}
 ?>
 
