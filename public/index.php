@@ -314,9 +314,9 @@ if((isset($_REQUEST['username']))&&(isset($_REQUEST['password']))){
 					$sort_name = $sortrow["sort_name"];
 					
 					//get the prev symptoms record
-					$sql = "SELECT symptom_id from symptoms 
-							WHERE sort_name < '".$sort_name."' 
-							ORDER BY sort_name DESC LIMIT 1";
+					$sql = "SELECT s.symptom_id from symptoms s join cancer_symptoms cs on s.id=cs.symptom_id
+						WHERE sort_name < '".$sort_name."' AND cancer_type='colorectal'
+						ORDER BY sort_name DESC LIMIT 1";
 					$sortresult = mysqli_query($link, $sql);
 					if(mysqli_num_rows($sortresult) > 0){
 						$sortrow = mysqli_fetch_array($sortresult, MYSQLI_BOTH);

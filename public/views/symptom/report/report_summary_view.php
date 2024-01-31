@@ -28,7 +28,8 @@
                             <th class="summary_heading_column" colspan ="1" style="width:8%;"></th>
                         </tr>
                     </thead>
-                    <tbody><?php
+                    <tbody>
+<?php
 					
 	foreach($symptom_summary_array as $symptom){
 		echo '
@@ -183,7 +184,7 @@
 			echo '
 						</tr>';
 		$counter ++;
-	}	
+	}
 ?>
     
                     </tbody>
